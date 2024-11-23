@@ -5,8 +5,9 @@ services:
     container_name: my-mysql
     restart: always
     environment:
-      - MYSQL_DATABASE=rides
-      - MYSQL_ROOT_PASSWORD=password
+      MYSQL_DATABASE: rides
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_HOST: "%"
     ports:
       - '5234:3306'
     volumes:

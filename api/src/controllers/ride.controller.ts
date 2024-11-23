@@ -21,7 +21,7 @@ export const confirmRideController = async (req: Request, res: Response): Promis
     if (!customer_id || !origin || !destination || !driver || !distance) {
       res.status(400).json({
         error_code: 'INVALID_DATA',
-        error_description: 'Todos os campos devem ser preenchidos.',
+        error_description: 'Os dados fornecidos no corpo da requisição são inválidos',
       });
       return;
     }
@@ -29,7 +29,7 @@ export const confirmRideController = async (req: Request, res: Response): Promis
     if (origin.trim() === destination.trim()) {
       res.status(400).json({
         error_code: 'INVALID_DATA',
-        error_description: 'Os endereços de origem e destino não podem ser iguais.',
+        error_description: 'Os dados fornecidos no corpo da requisição são inválidos',
       });
       return;
     }
@@ -40,7 +40,7 @@ export const confirmRideController = async (req: Request, res: Response): Promis
     if (!driverResult.length) {
       res.status(404).json({
         error_code: 'DRIVER_NOT_FOUND',
-        error_description: 'Motorista não encontrado.',
+        error_description: 'Motorista não encontrado',
       });
       return;
     }
@@ -49,7 +49,7 @@ export const confirmRideController = async (req: Request, res: Response): Promis
     if (distance < driverData.min_km) {
       res.status(406).json({
         error_code: 'INVALID_DISTANCE',
-        error_description: 'A quilometragem é inválida para o motorista selecionado.',
+        error_description: 'Quilometragem inválida para o motorista',
       });
       return;
     }
@@ -61,7 +61,7 @@ export const confirmRideController = async (req: Request, res: Response): Promis
       [customer_id, origin, destination, distance, duration, driver.id, driver.name, value]
     );
 
-    res.status(200).json({ success: true });
+    res.status(200).json({ message: 'Operação realzada com sucesso', success: true });
   } catch (error: any) {
     console.error('Erro ao confirmar viagem:', error.message);
     res.status(500).json({
