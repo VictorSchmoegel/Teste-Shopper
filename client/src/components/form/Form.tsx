@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Input from "../input/Input";
 import Button from "../button/Button";
 import Map from "../map/Map";
@@ -6,6 +7,7 @@ import "./Form.css";
 
 export default function Form() {
   const GOOGLE_API_KEY = 'AIzaSyCYxU0SWGtSZjyIKxg6IlTNiWjz0cNcgcg';
+  const navigate = useNavigate();
 
   type RouteInfo = {
     encodedPolyline: string;
@@ -97,6 +99,7 @@ export default function Form() {
       const data = await res.json();
       if (data.success) {
         alert("Viagem confirmada com sucesso!");
+        navigate("/history");
       } else {
         alert("Erro ao confirmar viagem: " + data.error_description);
       }
@@ -127,9 +130,7 @@ export default function Form() {
         placeholder="Digite o endereço de destino"
       />
       <Button label="Estimar Valor da Viagem" onClick={handleSubmit} />
-
       {loading && <p>Carregando opções de motoristas...</p>}
-
       {driverOptions.length > 0 && (
         <div>
           <h2>Motoristas disponíveis</h2>
@@ -151,13 +152,15 @@ export default function Form() {
           </div>
         </div>
       )}
-      {routeInfo && (
-        <div>
-          <h2>Mapa da Rota</h2>
-          <Map encodedPolyline={routeInfo.encodedPolyline} googleApiKey={GOOGLE_API_KEY} />
-        </div>
-      )}
       {error && <p>Erro ao buscar motoristas disponíveis</p>}
+      {
+        routeInfo && (
+          <div>
+            <h2>Mapa da Rota</h2>
+            <Map encodedPolyline={routeInfo.encodedPolyline} googleApiKey={GOOGLE_API_KEY} />
+          </div>
+        )
+      }
     </form>
   );
 };
