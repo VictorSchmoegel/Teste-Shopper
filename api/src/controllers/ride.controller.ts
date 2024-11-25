@@ -126,7 +126,7 @@ export const getRidesController = async (req: Request, res: Response): Promise<v
         id: ride.driver_id,
         name: ride.driver_name,
       },
-      value: ride.value,
+      value: parseFloat(ride.value),
     }));
     res.status(200).json({
       customer_id,
@@ -134,6 +134,32 @@ export const getRidesController = async (req: Request, res: Response): Promise<v
     });
   } catch (error: any) {
     console.error('Erro ao listar viagens', error.message);
+    res.status(500).json({
+      error_code: 'INTERNAL_ERROR',
+      error_description: 'Erro interno no servidor.',
+    });
+  }
+};
+
+export const getDriversController = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const [drivers]: any = await query('SELECT id, name FROM drivers');
+    if (!drivers.length) {
+      res.status(404).json({
+        error_code: 'NO_DRIVERS_FOUND',
+        error_description: 'Nenhum motorista encontrado',
+      });
+      return;
+    }
+
+    res.status(200).json({
+      drivers: drivers.map((driver: any) => ({
+        id: driver.id,
+        name: driver.name,
+      })),
+    });
+  } catch (error: any) {
+    console.error('Erro ao listar motoristas:', error.message);
     res.status(500).json({
       error_code: 'INTERNAL_ERROR',
       error_description: 'Erro interno no servidor.',
