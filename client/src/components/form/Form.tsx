@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Input from "../input/Input";
 import Button from "../button/Button";
+import "./Form.css";
 
 export default function Form() {
   const [formData, setFormData] = useState({
@@ -8,6 +9,9 @@ export default function Form() {
     origin: "",
     destination: ""
   });
+  const [driverOptions, setDriverOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -22,6 +26,10 @@ export default function Form() {
       alert("Por favor, preencha todos os campos!");
       return;
     }
+
+    setLoading(true);
+    setError(false);
+
     try {
       const res = await fetch('/api/ride/estimate', {
         method: "POST",
@@ -31,10 +39,15 @@ export default function Form() {
         body: JSON.stringify(formData)
       });
       const data = await res.json();
+      setDriverOptions(data.options);
       console.log(data);
+      console.log(data.options);
     } catch (error) {
-      console.error(error);
-    }
+      console.error("Erro ao buscar motoristas disponíveis", error);
+      setError(true);
+    } finally {
+      setLoading(false);
+    };
   };
 
   return (
@@ -58,6 +71,28 @@ export default function Form() {
         placeholder="Digite o endereço de destino"
       />
       <Button label="Estimar Valor da Viagem" onClick={handleSubmit} />
+      {loading ? (
+        <p>Carregando opções de motoristas...</p>
+      ) : driverOptions.length > 0 ? (
+        <div>
+          <h2>Motoristas disponíveis</h2>
+          <ul>
+            {driverOptions.map((driver: any) => (
+              <li key={driver.id}>
+                <div className="drive_card">
+                  <span>Motorista: {driver.name} </span>
+                  <span>Descrição: {driver.description} </span>
+                  <span>Veículo: {driver.vehicle} </span>
+                  <span>Nota: {driver.review.rating} </span>
+                  <span>Valor: R${driver.value} </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        error && <p>Erro ao buscar motoristas disponíveis</p>
+      )}
     </form>
   );
 };

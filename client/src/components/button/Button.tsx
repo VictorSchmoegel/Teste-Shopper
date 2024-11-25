@@ -1,3 +1,5 @@
+import "./button.css";
+
 interface ButtonProps {
   label: string;
   onClick: () => void;
@@ -6,6 +8,7 @@ interface ButtonProps {
 export default function Button({ label, onClick }: ButtonProps) {
   return (
     <button
+      className=""
       type="button"
       onClick={onClick}
     >
