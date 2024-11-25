@@ -54,7 +54,7 @@ export const calculateRoute = async (
     const response = await axios.post(GOOGLE_MAPS_URL, body, {
       headers: {
         'Content-Type': 'application/json',
-        'X-Goog-FieldMask': 'routes.distanceMeters,routes.duration',
+        'X-Goog-FieldMask': 'routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline',
       },
     });
 
