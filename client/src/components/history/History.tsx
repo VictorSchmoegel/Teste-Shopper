@@ -15,11 +15,11 @@ export default function History() {
   ]);
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchDrivers = async () => {
     setLoading(true);
-    setError(false);
+    setError(null);
 
     try {
       const res = await fetch("/api/drivers");
@@ -32,12 +32,11 @@ export default function History() {
         }));
         setDriverOptions([{ value: "all", label: "Todos" }, ...options]);
       } else {
-        console.error("Erro ao carregar motoristas:", data.error_description);
-        alert("Erro ao carregar motoristas: " + data.error_description);
+        setError(data.error_description || "Erro ao carregar motoristas.");
       }
     } catch (err) {
-      console.error("Erro ao buscar motoristas:", err);
-      setError(true);
+      setError("Não foi possível carregar a lista de motoristas.");
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -58,12 +57,12 @@ export default function History() {
 
   const handleFilter = async () => {
     if (!formData.customer_id) {
-      alert("Por favor, insira o ID do cliente.");
+      setError("Por favor, insira o ID do cliente.");
       return;
     }
 
     setLoading(true);
-    setError(false);
+    setError(null);
 
     try {
       const driverQuery =
@@ -76,12 +75,11 @@ export default function History() {
       if (response.ok) {
         setTrips(data.rides);
       } else {
-        console.error("Erro ao buscar histórico:", data.error_description);
-        alert("Erro ao buscar histórico: " + data.error_description);
+        setError(data.error_description || "Erro ao buscar histórico.");
       }
     } catch (err) {
-      console.error("Erro ao buscar histórico de viagens:", err);
-      setError(true);
+      setError("Não foi possível buscar o histórico de viagens.");
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -106,8 +104,8 @@ export default function History() {
         <Button label="Aplicar Filtro" onClick={handleFilter} />
       </div>
       {loading && <p>Carregando...</p>}
-      {error && <p>Erro ao buscar informações. Tente novamente.</p>}
-      {trips.length > 0 && (
+      {error && <p className="error">{error}</p>}
+      {trips.length > 0 ? (
         <div className="trips-list">
           <h2>Viagens Realizadas</h2>
           <table>
@@ -123,26 +121,22 @@ export default function History() {
               </tr>
             </thead>
             <tbody>
-              {trips.map((trip: any) => {
-                console.log("Trip value:", trip.value);
-                return (
-                  <tr key={trip.id}>
-                    <td>{new Date(trip.date).toLocaleString()}</td>
-                    <td>{trip.driver.name}</td>
-                    <td>{trip.origin}</td>
-                    <td>{trip.destination}</td>
-                    <td>{trip.distance.toFixed(2)} km</td>
-                    <td>{trip.duration}</td>
-                    <td>R${trip.value.toFixed(2)}</td>
-                  </tr>
-                );
-              })}
+              {trips.map((trip: any) => (
+                <tr key={trip.id}>
+                  <td>{new Date(trip.date).toLocaleString()}</td>
+                  <td>{trip.driver.name}</td>
+                  <td>{trip.origin}</td>
+                  <td>{trip.destination}</td>
+                  <td>{trip.distance.toFixed(2)} km</td>
+                  <td>{trip.duration} min</td>
+                  <td>R${trip.value.toFixed(2)}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
-      )}
-      {trips.length === 0 && !loading && (
-        <p>Nenhuma viagem encontrada para os filtros aplicados.</p>
+      ) : (
+        !loading && <p>Nenhuma viagem encontrada.</p>
       )}
     </div>
   );

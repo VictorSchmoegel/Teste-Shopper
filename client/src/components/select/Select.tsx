@@ -1,4 +1,5 @@
 import "./Select.css";
+import ErrorMessage from "../error/errorMessage";
 
 interface SelectOption {
   value: string | number;
@@ -11,6 +12,7 @@ interface SelectProps {
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options: SelectOption[];
   placeholder?: string;
+  error?: string;
 }
 
 export default function Select({
@@ -19,6 +21,7 @@ export default function Select({
   onChange,
   options,
   placeholder,
+  error,
 }: SelectProps) {
   return (
     <div className="select-container">
@@ -31,6 +34,7 @@ export default function Select({
           </option>
         ))}
       </select>
+      {error && <ErrorMessage message={error} />}
     </div>
   );
 }

@@ -7,7 +7,7 @@ import "./Form.css";
 
 export default function Form() {
   const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
-  console.log("GOOGLE_API_KEY no Form:", GOOGLE_API_KEY);
+  // console.log("GOOGLE_API_KEY no Form:", GOOGLE_API_KEY);
   const navigate = useNavigate();
 
   type RouteInfo = {
@@ -23,7 +23,7 @@ export default function Form() {
   });
   const [driverOptions, setDriverOptions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [routeInfo, setRouteInfo] = useState<RouteInfo>(null);
   const [duration, setDuration] = useState<string | null>(null);
 
@@ -37,11 +37,11 @@ export default function Form() {
   const handleSubmit = async () => {
     console.log(formData);
     if (!formData.customer_id || !formData.origin || !formData.destination) {
-      alert("Por favor, preencha todos os campos!");
+      setError("Por favor, preencha todos os campos!");
       return;
     }
     setLoading(true);
-    setError(false);
+    setError(null);
     try {
       const res = await fetch('/api/ride/estimate', {
         method: "POST",
@@ -67,11 +67,11 @@ export default function Form() {
         // Atualizar opções de motoristas
         setDriverOptions(result.options || []);
       } else {
-        console.warn("Resposta inesperada:", data);
+        setError(data.error_description || "Erro inesperado ao estimar a viagem.");
       }
     } catch (error) {
       console.error("Erro ao buscar motoristas disponíveis", error);
-      setError(true);
+      setError("Não foi possível estimar a viagem. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -107,11 +107,11 @@ export default function Form() {
         alert("Viagem confirmada com sucesso!");
         navigate("/history");
       } else {
-        alert("Erro ao confirmar viagem: " + data.error_description);
+        setError(data.error_description || "Erro ao confirmar a viagem.");
       }
     } catch (error) {
       console.error("Erro ao confirmar viagem", error);
-      alert("Erro ao confirmar a viagem. Tente novamente.");
+      setError("Não foi possível confirmar a viagem. Tente novamente.");
     }
   };
 
@@ -137,6 +137,7 @@ export default function Form() {
       />
       <Button label="Estimar Valor da Viagem" onClick={handleSubmit} />
       {loading && <p>Carregando opções de motoristas...</p>}
+      {error && <p className="error">{error}</p>}
       {driverOptions.length > 0 && (
         <div>
           <h2>Motoristas disponíveis</h2>
