@@ -1,4 +1,4 @@
-import { estimateRideController, confirmRideController } from '../../controllers/ride.controller';
+import { estimateRideController, confirmRideController, getRidesController } from '../../controllers/ride.controller';
 import { estimateRide } from '../../services/ride.service';
 import { validateRideRequest } from '../../utils/validators';
 import { Request, Response } from 'express';
@@ -98,11 +98,6 @@ describe('confirmRideController Tests', () => {
   beforeEach(() => {
     req = { body: {} };
     res = mockResponse();
-  });
-
-  afterAll(async () => {
-    // Finalizar a pool de conexões
-    await pool.end();
   });
 
   it('deve retornar erro 400 se os dados forem inválidos', async () => {
@@ -224,6 +219,86 @@ describe('confirmRideController Tests', () => {
     });
 
     // Restaurar o comportamento original da função mockada
+    jest.restoreAllMocks();
+  });
+});
+
+describe('getRidesController Tests', () => {
+  let req: Partial<Request>;
+  let res: ReturnType<typeof mockResponse>;
+
+  beforeEach(() => {
+    req = { body: {} };
+    res = mockResponse();
+  });
+
+  afterAll(async () => {
+    // Finalizar a pool de conexões
+    await pool.end();
+  });
+
+  it('retorna 400 se o ID do cliente não for informado', async () => {
+    req.query = {};
+
+    await getRidesController(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error_code: 'INVALID_DATA',
+      error_description: 'O ID do cliente não pode estar em branco',
+    });
+  });
+
+  it('deve retornar erro 400 se o id do motorista for inválido', async () => {
+    req.params = { customer_id: '1' };
+    req.query = { driver_id: 'invalid' };
+
+    await getRidesController(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error_code: 'DRIVER_NOT_FOUND',
+      error_description: 'Motorista inválido',
+    });
+  });
+
+  it('deve retornar erro 404 se não houver registros de viagens', async () => {
+    req.params = { customer_id: '9999' };
+
+    await getRidesController(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({
+      error_code: 'NO_RIDES_FOUND',
+      error_description: 'Nenhum registro encontrado',
+    });
+  });
+
+  /*it('deve retornar sucesso (200) com as viagens do cliente', async () => {
+    req.params = { customer_id: '1' };
+    const [rides] = await query('SELECT * FROM rides WHERE customer_id = ?', [1]);
+
+    await getRidesController(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Operação realizada com sucesso',
+      result: rides,
+    });
+  });*/
+
+  it('deve retornar 500 em caso de erro inesperado', async () => {
+    req.params = { customer_id: '1' };
+    jest.spyOn(require('../../db'), 'query').mockRejectedValue(new Error('Erro inesperado'));
+
+    await getRidesController(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error_code: 'INTERNAL_ERROR',
+      error_description: 'Erro interno no servidor.',
+    });
+
     jest.restoreAllMocks();
   });
 });
