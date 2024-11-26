@@ -88,8 +88,8 @@ export const confirmRideController = async (req: Request, res: Response): Promis
 
 export const getRidesController = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { customer_id } = req.params;
-    const { driver_id } = req.query;
+    const { customer_id } = req.params || {};
+    const { driver_id } = req.query || {};
 
     if (!customer_id) {
       res.status(400).json({
