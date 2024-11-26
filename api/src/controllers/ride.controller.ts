@@ -6,13 +6,25 @@ import { query } from '../db'
 export const estimateRideController = async (req: Request, res: Response): Promise<void> => {
   try {
     const { customer_id, origin, destination } = req.body;
-    validateRideRequest(customer_id, origin, destination);
+
+    // Validar os dados da requisição
+    const validationError = validateRideRequest(customer_id, origin, destination);
+    if (validationError) {
+      res.status(400).json({
+        error_code: 'INVALID_DATA',
+        error_description: validationError,
+      });
+      return;
+    }
+
+    // Estimar viagem
     const result = await estimateRide(origin, destination);
     res.status(200).json({ message: 'Operação realizada com sucesso', result });
   } catch (error: any) {
-    res.status(400).json({
-      error_code: 'INVALID_DATA',
-      error_description: 'Os dados fornecidos no corpo da requisição são inválidos',
+    console.error('Erro no controlador estimateRide:', error.message);
+    res.status(500).json({
+      error_code: 'INTERNAL_ERROR',
+      error_description: 'Erro interno no servidor.',
     });
   }
 };
@@ -132,6 +144,7 @@ export const getRidesController = async (req: Request, res: Response): Promise<v
       value: parseFloat(ride.value),
     }));
     res.status(200).json({
+      message: 'Operação realizada com sucesso',
       customer_id,
       rides: formattedRides,
     });
