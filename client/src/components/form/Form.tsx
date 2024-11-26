@@ -39,10 +39,8 @@ export default function Form() {
       alert("Por favor, preencha todos os campos!");
       return;
     }
-
     setLoading(true);
     setError(false);
-
     try {
       const res = await fetch('/api/ride/estimate', {
         method: "POST",
@@ -52,23 +50,30 @@ export default function Form() {
         body: JSON.stringify(formData)
       });
       const data = await res.json();
-      console.log(data);
-      if (data.routeResponse) {
-        setRouteInfo({
-          encodedPolyline: data.routeResponse.routes[0].polyline.encodedPolyline,
-          origin: formData.origin,
-          destination: formData.destination,
-        });
-        setDuration(data.duration);
+      console.log("Resposta da API:", data);
+      if (data.message === "Operação realizada com sucesso" && data.result) {
+        const result = data.result;
+        // Atualizar rota
+        if (result.routeResponse?.routes?.[0]?.polyline?.encodedPolyline) {
+          setRouteInfo({
+            encodedPolyline: result.routeResponse.routes[0].polyline.encodedPolyline,
+            origin: formData.origin,
+            destination: formData.destination,
+          });
+        }
+        // Atualizar duração
+        setDuration(result.duration);
+        // Atualizar opções de motoristas
+        setDriverOptions(result.options || []);
+      } else {
+        console.warn("Resposta inesperada:", data);
       }
-      setDriverOptions(data.options);
-      console.log(data.options);
     } catch (error) {
       console.error("Erro ao buscar motoristas disponíveis", error);
       setError(true);
     } finally {
       setLoading(false);
-    };
+    }
   };
 
   const confirmRide = async (driver: any) => {

@@ -8,7 +8,7 @@ export const estimateRideController = async (req: Request, res: Response): Promi
     const { customer_id, origin, destination } = req.body;
     validateRideRequest(customer_id, origin, destination);
     const result = await estimateRide(origin, destination);
-    res.status(200).json({ message: 'Operação realzada com sucesso', result });
+    res.status(200).json({ message: 'Operação realizada com sucesso', result });
   } catch (error: any) {
     res.status(400).json({
       error_code: 'INVALID_DATA',
@@ -64,7 +64,7 @@ export const confirmRideController = async (req: Request, res: Response): Promis
       [customer_id, new Date(), origin, destination, distance, duration, driver.id, driver.name, value]
     );
 
-    res.status(200).json({ message: 'Operação realzada com sucesso', success: true });
+    res.status(200).json({ message: 'Operação realizada com sucesso', success: true });
   } catch (error: any) {
     console.error('Erro ao confirmar viagem:', error.message);
     res.status(500).json({
