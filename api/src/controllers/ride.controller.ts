@@ -8,9 +8,12 @@ export const estimateRideController = async (req: Request, res: Response): Promi
     const { customer_id, origin, destination } = req.body;
     validateRideRequest(customer_id, origin, destination);
     const result = await estimateRide(origin, destination);
-    res.status(200).json(result);
+    res.status(200).json({ message: 'Operação realzada com sucesso', result });
   } catch (error: any) {
-    res.status(400).json({ error_code: 'INVALID_DATA', error_description: error.message });
+    res.status(400).json({
+      error_code: 'INVALID_DATA',
+      error_description: 'Os dados fornecidos no corpo da requisição são inválidos',
+    });
   }
 };
 
