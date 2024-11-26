@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const GOOGLE_API_KEY = 'AIzaSyCYxU0SWGtSZjyIKxg6IlTNiWjz0cNcgcg';
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 const GEOCODING_API_URL = `https://maps.googleapis.com/maps/api/geocode/json?key=${GOOGLE_API_KEY}`;
 const GOOGLE_MAPS_URL = `https://routes.googleapis.com/directions/v2:computeRoutes?key=${GOOGLE_API_KEY}`;
 

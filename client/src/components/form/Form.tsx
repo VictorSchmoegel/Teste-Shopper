@@ -6,7 +6,7 @@ import Map from "../map/Map";
 import "./Form.css";
 
 export default function Form() {
-  const GOOGLE_API_KEY = 'AIzaSyCYxU0SWGtSZjyIKxg6IlTNiWjz0cNcgcg';
+  const GOOGLE_API_KEY = import.meta.env.REACT_APP_GOOGLE_API_KEY;
   const navigate = useNavigate();
 
   type RouteInfo = {
