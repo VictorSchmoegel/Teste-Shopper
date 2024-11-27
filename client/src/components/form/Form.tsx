@@ -7,7 +7,7 @@ import "./Form.css";
 
 export default function Form() {
   const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
-  // console.log("GOOGLE_API_KEY no Form:", GOOGLE_API_KEY);
+  console.log("GOOGLE_API_KEY no Form:", GOOGLE_API_KEY);
   const navigate = useNavigate();
 
   type RouteInfo = {
