@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">86.84% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>66/76</span>
+                <span class='fraction'>76/76</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">86.95% </span>
+                <span class="strong">91.3% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>20/23</span>
+                <span class='fraction'>21/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">70% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>7/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">86.56% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>58/67</span>
+                <span class='fraction'>67/67</span>
             </div>
         
             
@@ -378,7 +378,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -405,26 +405,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -588,26 +588,26 @@ export const getRidesController = async (req: Request, res: Response): Promise&l
   }
 };
 &nbsp;
-export const getDriversController = <span class="fstat-no" title="function not covered" >async (r</span>eq: Request, res: Response): Promise&lt;void&gt; =&gt;<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" > {</span></span>
-<span class="cstat-no" title="statement not covered" >  try {</span>
-    const [drivers]: any = <span class="cstat-no" title="statement not covered" >await query('SELECT id, name FROM drivers');</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!drivers.length) {</span>
-<span class="cstat-no" title="statement not covered" >      res.status(404).json({</span>
+export const getDriversController = async (req: Request, res: Response): Promise&lt;void&gt; =&gt; {
+  try {
+    const [drivers]: any = await query('SELECT id, name FROM drivers');
+    if (!drivers.length) {
+      res.status(404).json({
         error_code: 'NO_DRIVERS_FOUND',
         error_description: 'Nenhum motorista encontrado',
       });
-<span class="cstat-no" title="statement not covered" >      return;</span>
+      return;
     }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    res.status(200).json({</span>
-      drivers: drivers.map(<span class="fstat-no" title="function not covered" >(d</span>river: any) =&gt; (<span class="cstat-no" title="statement not covered" >{</span>
+    res.status(200).json({
+      drivers: drivers.map((driver: any) =&gt; ({
         id: driver.id,
         name: driver.name,
       })),
     });
   } catch (error: any) {
-<span class="cstat-no" title="statement not covered" >    console.error('Erro ao listar motoristas:', error.message);</span>
-<span class="cstat-no" title="statement not covered" >    res.status(500).json({</span>
+    console.error('Erro ao listar motoristas:', error.message);
+    res.status(500).json({
       error_code: 'INTERNAL_ERROR',
       error_description: 'Erro interno no servidor.',
     });
@@ -619,7 +619,7 @@ export const getDriversController = <span class="fstat-no" title="function not c
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-11-26T19:37:49.492Z
+                at 2024-11-27T12:02:29.446Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

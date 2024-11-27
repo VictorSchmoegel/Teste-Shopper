@@ -1,4 +1,4 @@
-import { estimateRideController, confirmRideController, getRidesController } from '../../controllers/ride.controller';
+import { estimateRideController, confirmRideController, getRidesController, getDriversController } from '../../controllers/ride.controller';
 import { estimateRide } from '../../services/ride.service';
 import { validateRideRequest } from '../../utils/validators';
 import { Request, Response } from 'express';
@@ -274,24 +274,108 @@ describe('getRidesController Tests', () => {
     });
   });
 
-  /*it('deve retornar sucesso (200) com as viagens do cliente', async () => {
+  it('deve retornar sucesso (200) com os registros formatados', async () => {
     req.params = { customer_id: '1' };
-    const [rides] = await query('SELECT * FROM rides WHERE customer_id = ?', [1]);
+    req.query = {}; // Sem filtro de motorista
+
+    const mockRides = [
+      {
+        id: 1,
+        data: new Date(),
+        origin: 'A',
+        destination: 'B',
+        distance: 15,
+        duration: 20,
+        value: '100.00',
+        driver_id: 2,
+        driver_name: 'Dominic Toretto',
+      },
+    ];
+
+    jest.spyOn(require('../../db'), 'query').mockResolvedValueOnce([mockRides]);
 
     await getRidesController(req as Request, res as Response);
 
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       message: 'Operação realizada com sucesso',
-      result: rides,
+      customer_id: '1',
+      rides: [
+        {
+          id: 1,
+          date: mockRides[0].data,
+          origin: 'A',
+          destination: 'B',
+          distance: 15,
+          duration: 20,
+          value: 100.0,
+          driver: {
+            id: 2,
+            name: 'Dominic Toretto',
+          },
+        },
+      ],
     });
-  });*/
+  });
 
   it('deve retornar 500 em caso de erro inesperado', async () => {
     req.params = { customer_id: '1' };
     jest.spyOn(require('../../db'), 'query').mockRejectedValue(new Error('Erro inesperado'));
 
     await getRidesController(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error_code: 'INTERNAL_ERROR',
+      error_description: 'Erro interno no servidor.',
+    });
+
+    jest.restoreAllMocks();
+  });
+});
+
+describe('getDriversController Tests', () => {
+  it('deve retornar erro 404 se não houver motoristas', async () => {
+    const req: Partial<Request> = {};
+    const res = mockResponse();
+
+    jest.spyOn(require('../../db'), 'query').mockResolvedValueOnce([[]]);
+
+    await getDriversController(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({
+      error_code: 'NO_DRIVERS_FOUND',
+      error_description: 'Nenhum motorista encontrado',
+    });
+  });
+
+  it('deve retornar sucesso (200) com a lista de motoristas', async () => {
+    const req: Partial<Request> = {};
+    const res = mockResponse();
+
+    const mockDrivers = [
+      { id: 1, name: 'Brian O\'Conner' },
+      { id: 2, name: 'Dominic Toretto' },
+    ];
+
+    jest.spyOn(require('../../db'), 'query').mockResolvedValueOnce([mockDrivers]);
+
+    await getDriversController(req as Request, res as Response);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      drivers: mockDrivers,
+    });
+  });
+
+  it('deve retornar erro 500 em caso de falha inesperada', async () => {
+    const req: Partial<Request> = {};
+    const res = mockResponse();
+
+    jest.spyOn(require('../../db'), 'query').mockRejectedValue(new Error('Erro inesperado'));
+
+    await getDriversController(req as Request, res as Response);
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
