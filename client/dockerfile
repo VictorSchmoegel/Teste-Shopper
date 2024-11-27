@@ -1,9 +1,19 @@
 # Etapa de build
 FROM node:18 AS build
 WORKDIR /app
+
+# Copiar arquivos necessários
 COPY package*.json ./
+
+# Instalar dependências
 RUN npm install
+
+# Copiar o restante do código
 COPY . .
+
+# Build da aplicação com a variável de ambiente passada pelo ARG
+ARG GOOGLE_API_KEY
+ENV VITE_GOOGLE_API_KEY=$GOOGLE_API_KEY
 RUN npm run build
 
 # Etapa de produção

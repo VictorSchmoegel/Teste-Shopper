@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   db:
     image: mysql/mysql-server:latest
@@ -19,14 +20,15 @@ services:
       dockerfile: api/Dockerfile
     container_name: backend
     ports:
-      - '8080:8080' # Porta do backend
+      - '8080:8080'
     environment:
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - DB_HOST=db
       - DB_PORT=3306
       - DB_USER=root
       - DB_PASSWORD=password
       - DB_NAME=rides
+    env_file:
+      - .env
     depends_on:
       - db
 
@@ -34,8 +36,10 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+      args:
+        GOOGLE_API_KEY: ${GOOGLE_API_KEY} # Passa a variável como argumento de build
     container_name: frontend
     ports:
-      - '80:80' # Porta do frontend
+      - '80:80'
     depends_on:
       - backend
