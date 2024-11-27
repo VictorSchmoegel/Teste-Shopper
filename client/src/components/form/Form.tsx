@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Input from "../input/Input";
 import Button from "../button/Button";
 import Map from "../map/Map";
-import "./Form.css";
+import "./form.css";
 
 export default function Form() {
   const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;

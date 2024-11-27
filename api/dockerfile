@@ -1,0 +1,21 @@
+# Base do Node.js
+FROM node:18
+
+# Diretório de trabalho no container
+WORKDIR /api
+
+# Copiar os arquivos necessários do contexto de build da raiz
+COPY ../package*.json ./
+COPY ../tsconfig.json ./
+
+# Instalar dependências
+RUN npm install
+
+# Copiar o código fonte
+COPY ./api ./
+
+# Expor a porta do backend
+EXPOSE 8080
+
+# Comando para iniciar o servidor
+CMD ["node", "src/index.js"]

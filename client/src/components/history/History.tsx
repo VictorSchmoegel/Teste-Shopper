@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Input from "../input/Input";
 import Button from "../button/Button";
 import Select from "../select/Select";
-import "./History.css";
+import "./history.css";
 
 export default function History() {
   const [formData, setFormData] = useState({

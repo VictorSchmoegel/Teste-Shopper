@@ -12,6 +12,30 @@ services:
       - '5234:3306'
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-volumes:
-  mysql-volume:
-    driver: local
+
+  backend:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: backend
+    ports:
+      - '8080:8080' # Porta do backend
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=rides
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - '80:80' # Porta do frontend
+    depends_on:
+      - backend

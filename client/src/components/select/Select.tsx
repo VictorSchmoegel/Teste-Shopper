@@ -1,4 +1,4 @@
-import "./Select.css";
+import "./select.css";
 import ErrorMessage from "../error/errorMessage";
 
 interface SelectOption {
